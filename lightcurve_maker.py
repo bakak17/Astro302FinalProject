@@ -34,12 +34,13 @@ errRef=np.array(errRef)
 RefAvg=np.average(fluxRef)
 NormalizedRef=fluxRef/RefAvg
 
-corrFlux=flux/NormalizedRef
+corrFlux=fluxRef/NormalizedRef
 corrMag=-2.5*np.log(corrFlux)/np.log(10)
 
 Mag=-2.5*np.log(flux)/np.log(10)
 k=0.1
 airCorrMag=Mag+k*airMass
+
 
 
 fig, ax = plt.subplots(2)
@@ -54,7 +55,6 @@ plt.show()
 
 plt.savefig("Lightcurve.pdf")
 plt.close()
-
 
 
 maxi=0
@@ -99,6 +99,7 @@ fit = Fit(model_dict, x=time, y=airCorrMag)
 fit_result = fit.execute()
 print(fit_result)
 plt.plot(time, fit.model(x=time, **fit_result.params).y, 'b')
+plt.plot(time,airCorrMag,'.')
 plt.title("Fourier Model")
 plt.xlabel("Julian Date")
 plt.ylabel("Differential Magnitude")
@@ -106,28 +107,3 @@ plt.show()
 plt.savefig("fourier_model.pdf")
 plt.close()
 
-xdata = np.array(time)
-ydata = np.array(fit.model(x=time, **fit_result.params).y)
-
-f = interpolate.interp1d(time, ydata)
-tnew = np.linspace(time[0],time[-1],np.size(time))
-dt = tnew[1]-tnew[0]
-magnew = f(tnew)
-
-plt.plot(time, ydata, '.')
-plt.plot(tnew, magnew, '-')
-plt.show()
-plt.close()
-
-'''
-fourier = fft.fft(magnew)
-
-n = tnew.size
-freq = fft.fftfreq(n, d=1*dt)
-
-plt.plot(freq, fourier, '.')
-plt.ylim(-10, 40)
-plt.xlim(-100, 100)
-plt.show()
-
-'''
